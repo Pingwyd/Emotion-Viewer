@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Emotion Detection Web App</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .container { 
+        max-width: 800px; 
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      }
+      h1 { 
+        color: #333;
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 2rem;
+      }
+      .tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #eee;
+      }
+      .tab {
+        padding: 0.75rem 1.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #666;
+        font-size: 1rem;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+      }
+      .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        font-weight: 600;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 500;
+      }
+      input[type=text], input[type=file] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+      input[type=file] {
+        padding: 0.5rem;
+      }
+      input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-weight: 600;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      button:active {
+        transform: translateY(0);
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      #preview, #webcamPreview {
+        max-width: 100%;
+        margin: 1rem 0;
+        border-radius: 8px;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      #video {
+        width: 100%;
+        max-width: 640px;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      #result {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: none;
+      }
+      #result.success {
+        background: #d4edda;
+        border: 2px solid #28a745;
+      }
+      #result.error {
+        background: #f8d7da;
+        border: 2px solid #dc3545;
+      }
+      .emotion-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #667eea;
+        color: white;
+        border-radius: 20px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0.5rem 0;
+      }
+      .confidence {
+        font-size: 1.1rem;
+        color: #333;
+        margin: 0.5rem 0;
+      }
+      .all-probs {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+      }
+      .prob-bar {
+        display: flex;
+        align-items: center;
+        margin: 0.5rem 0;
+      }
+      .prob-label {
+        width: 100px;
+        font-weight: 500;
+      }
+      .prob-value {
+        flex: 1;
+        height: 24px;
+        background: #e9ecef;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+      }
+      .prob-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 8px;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .loader {
+        display: none;
+        text-align: center;
+        margin: 1rem 0;
+      }
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .webcam-controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎭 Emotion Detection</h1>
+      <p class="subtitle">Upload an image or use your webcam to detect emotions</p>
+      
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('upload')">📷 Upload Image</button>
+        <button class="tab" onclick="switchTab('webcam')">🎥 Live Webcam</button>
+      </div>
+
+      <!-- Upload Tab -->
+      <div id="upload-tab" class="tab-content active">
+        <form id="uploadForm">
+          <div class="form-group">
+            <label for="name">Your Name (Optional):</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name">
+          </div>
+          
+          <div class="form-group">
+            <label for="image">Choose an image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+          </div>
+          
+          <img id="preview" alt="Preview">
+          
+          <button type="submit">🔮 Detect Emotion</button>
+        </form>
+      </div>
+
+      <!-- Webcam Tab -->
+      <div id="webcam-tab" class="tab-content">
+        <div class="form-group">
+          <label for="webcamName">Your Name (Optional):</label>
+          <input type="text" id="webcamName" placeholder="Enter your name">
+        </div>
+        
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+        
+        <div class="webcam-controls">
+          <button id="startWebcam" onclick="startWebcam()">📹 Start Webcam</button>
+          <button id="captureBtn" onclick="captureAndPredict()" disabled>📸 Capture & Detect</button>
+          <button id="stopWebcam" onclick="stopWebcam()" disabled>⏹️ Stop</button>
+        </div>
+        
+        <img id="webcamPreview" alt="Captured">
+      </div>
+
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p>Analyzing emotion...</p>
+      </div>
+
+      <div id="result"></div>
+    </div>
+
+    <script>
+      let videoStream = null;
+
+      // Tab switching
+      function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        if (tab === 'upload') {
+          document.querySelector('.tab:first-child').classList.add('active');
+          document.getElementById('upload-tab').classList.add('active');
+          stopWebcam();
+        } else {
+          document.querySelector('.tab:last-child').classList.add('active');
+          document.getElementById('webcam-tab').classList.add('active');
+        }
+        
+        hideResult();
+      }
+
+      // Image preview
+      document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const preview = document.getElementById('preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Upload form submission
+      document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        showLoader();
+        hideResult();
+        
+        try {
+          const response = await fetch('/predict', {
+            method: 'POST',
+            body: formData
+          });
+          
+          const data = await response.json();
+          hideLoader();
+          displayResult(data);
+        } catch (error) {
+          hideLoader();
+          displayResult({ error: 'Failed to process image: ' + error.message });
+        }
+      });
+
+      // Webcam functions
+      async function startWebcam() {
+        try {
+          videoStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 640, height: 480 } 
+          });
+          
+          const video = document.getElementById('video');
+          video.srcObject = videoStream;
+          
+          document.getElementById('startWebcam').disabled = true;
+          document.getElementById('captureBtn').disabled = false;
+          document.getElementById('stopWebcam').disabled = false;
+          
+        } catch (error) {
+          alert('Could not access webcam: ' + error.message);
+        }
+      }
+
+      function stopWebcam() {
+        if (videoStream) {
+          videoStream.getTracks().forEach(track => track.stop());
+          videoStream = null;
+          
+          const video = document.getElementById('video');
+          video.srcObject = null;
+          
+          document.getElementById('startWebcam').disabled = false;
+          document.getElementById('captureBtn').disabled = true;
+          document.getElementById('stopWebcam').disabled = true;
+        }
+      }
+
+      async function captureAndPredict() {
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0);
+        
+        // Show preview
+        const preview = document.getElementById('webcamPreview');
+        preview.src = canvas.toDataURL('image/jpeg');
+        preview.style.display = 'block';
+        
+        // Get base64 image
+        const imageData = canvas.toDataURL('image/jpeg');
+        const name = document.getElementById('webcamName').value || 'Anonymous';
+        
+        showLoader();
+        hideResult();
+        
+        try {
+          const response = await fetch('/predict_webcam', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              image: imageData,
+              name: name
+            })
+          });
+          
+          const data = await response.json();
+          hideLoader();
+          displayResult(data);
+        } catch (error) {
+          hideLoader();
+          displayResult({ error: 'Failed to process image: ' + error.message });
+        }
+      }
+
+      function showLoader() {
+        document.getElementById('loader').style.display = 'block';
+      }
+
+      function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+      }
+
+      function hideResult() {
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('result').className = '';
+      }
+
+      function displayResult(data) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        
+        if (data.error) {
+          resultDiv.className = 'error';
+          resultDiv.innerHTML = `<h3>❌ Error</h3><p>${data.error}</p>`;
+        } else {
+          resultDiv.className = 'success';
+          
+          const confidencePercent = (data.confidence * 100).toFixed(1);
+          
+          let html = `
+            <h3>✅ Detection Complete!</h3>
+            <div class="emotion-badge">${data.emotion}</div>
+            <div class="confidence">Confidence: ${confidencePercent}%</div>
+          `;
+          
+          if (data.all_probabilities) {
+            html += '<div class="all-probs"><strong>All Predictions:</strong>';
+            
+            // Sort by probability
+            const sorted = Object.entries(data.all_probabilities)
+              .sort((a, b) => b[1] - a[1]);
+            
+            sorted.forEach(([emotion, prob]) => {
+              const percent = (prob * 100).toFixed(1);
+              html += `
+                <div class="prob-bar">
+                  <div class="prob-label">${emotion}:</div>
+                  <div class="prob-value">
+                    <div class="prob-fill" style="width: ${percent}%">${percent}%</div>
+                  </div>
+                </div>
+              `;
+            });
+            
+            html += '</div>';
+          }
+          
+          resultDiv.innerHTML = html;
+        }
+      }
+    </script>
+  </body>
+</html>

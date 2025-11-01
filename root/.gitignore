@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Database (optional - include if you want to keep it in repo)
+# runs.db
+
+# Large files (you may want to track these with Git LFS)
+*.h5
+*.pkl
+*.pth
+*.onnx
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+
+# Data (optional - exclude large datasets)
+data/
+datasets/
+emotion
+
+
+#folders
+exported_images/
+
+#stuff
+emotion_detection.db
+link_to_web_app.txt

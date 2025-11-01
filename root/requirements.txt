@@ -1,0 +1,16 @@
+# Core ML
+tensorflow>=2.9
+numpy
+opencv-python
+Pillow
+
+# Web Framework
+Flask
+
+# Deployment
+gunicorn
+
+# Optional/Utilities
+h5py
+matplotlib
+scikit-learn
