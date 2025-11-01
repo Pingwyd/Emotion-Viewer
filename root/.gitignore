@@ -59,7 +59,7 @@ emotion
 
 #folders
 exported_images/
-random/
+./random/
 
 #stuff
 emotion_detection.db
