@@ -21,7 +21,7 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max upload
 
 # Configuration
-MODEL_PATH = 'emotion_mlp_model (3).pkl'  # Your sklearn model
+MODEL_PATH = 'model.pkl'  # Your sklearn model
 DB_FILE = 'emotion_detection.db'
 IMG_SIZE = (48, 48)  # Model expects 48x48 images
 
