@@ -380,13 +380,6 @@ gunicorn>=21.2.0
 - Reduced dependencies from 330MB to ~50MB
 - Faster build times and easier maintenance
 
-## 📧 Contact & Submission
-
-**Assignment Submission**:
-- Email: odunayo.osofuye@covenantuniversity.edu.ng
-- Format: `SURNAME_MATNO_EMOTION_DETECTION_WEB_APP.zip`
-- Include: Source code + `link_to_web_app.txt` with deployment URL
-
 **Live Demo**: https://emotion-viewer.onrender.com
 
 ## 📄 License
