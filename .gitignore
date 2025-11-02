@@ -54,8 +54,6 @@ build/
 # Data (optional - exclude large datasets)
 data/
 datasets/
-emotion
-
 
 #folders
 exported_images/

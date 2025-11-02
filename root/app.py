@@ -27,9 +27,7 @@ IMG_SIZE = (48, 48)  # Model expects 48x48 images
 
 # Emotion labels - UPDATE THIS to match your model's training data
 # Your model was trained on 5 emotions
-# EMOTION_LABELS = ['angry', 'happy', 'neutral', 'sad', 'surprise']
-EMOTION_LABELS = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
-# EMOTION_LABELS = ['angry', 'fear', 'happy', 'sad', 'surprise']
+EMOTION_LABELS = ['Angry', 'Fear', 'Happy', 'Sad', 'Suprise']
 
 # Global variables
 model = None
