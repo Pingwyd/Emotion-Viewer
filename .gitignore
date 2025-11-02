@@ -31,7 +31,7 @@ Thumbs.db
 
 # Large files (you may want to track these with Git LFS)
 *.h5
-*.pkl
+#*.pkl
 *.pth
 *.onnx
 
