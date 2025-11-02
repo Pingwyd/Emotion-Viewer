@@ -468,30 +468,36 @@ def health_check():
 
 # ==================== MAIN ====================
 
+# ==================== INITIALIZE ON STARTUP ====================
+# This runs when gunicorn loads the app module
+print("=" * 60)
+print("🎭 EMOTION DETECTION WEB APP - BACKEND")
+print("=" * 60)
+
+# Initialize database
+print("\n📊 Initializing database...")
+init_database()
+
+# Load model
+print("\n🤖 Loading emotion detection model...")
+model_loaded = load_model_and_labels()
+
+if not model_loaded:
+    print("\n⚠️ WARNING: Model failed to load! App will return errors.")
+else:
+    print(f"\n✅ Backend ready!")
+    print(f"📁 Database: {DB_FILE}")
+    print(f"🎯 Emotions: {EMOTION_LABELS}")
+print("=" * 60)
+
+
+# ==================== MAIN ====================
+
 if __name__ == '__main__':
-    print("=" * 60)
-    print("🎭 EMOTION DETECTION WEB APP - BACKEND")
-    print("=" * 60)
-    
-    # Initialize database
-    print("\n📊 Initializing database...")
-    init_database()
-    
-    # Load model
-    print("\n🤖 Loading emotion detection model...")
-    model_loaded = load_model_and_labels()
-    
-    if model_loaded:
-        print("\n✅ Backend ready!")
-        print(f"📁 Database: {DB_FILE}")
-        print(f"🎯 Emotions: {EMOTION_LABELS}")
-        print(f"🌐 Starting Flask server on http://localhost:5000")
-        print("=" * 60)
-        
-        app.run(debug=True, host='127.0.0.1', port=5000)
-    else:
-        print("\n❌ Failed to load model!")
-        print("\nTo fix this:")
-        print("1. Train a model first: python model.py")
-        print("2. Or update MODEL_PATH in app.py to point to your model")
-        print("=" * 60)
+    # This only runs when using 'python app.py' directly (development mode)
+    print(f"🌐 Starting Flask development server on http://localhost:5000")
+    app.run(debug=True, host='127.0.0.1', port=5000)
+else:
+    # This message shows when running with gunicorn (production)
+    print("Running with WSGI server (gunicorn)")
+
