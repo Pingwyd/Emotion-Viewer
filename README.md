@@ -22,11 +22,7 @@ emotion-viewer/
 │   └── index.html                  # Web UI with upload & webcam support
 ├── emotion_detection.db            # SQLite database for predictions (created on first run)
 ├── init_database.py                # Database initialization script
-├── query_database.py               # Database query utility
-└── root/                           # Legacy folder (kept for compatibility)
-    ├── app.py
-    ├── templates/
-    └── emotion_mlp_model (3).pkl
+└──  query_database.py               # Database query utility
 ```
 
 ## 🎯 Emotion Classes
