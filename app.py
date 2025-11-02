@@ -84,18 +84,35 @@ def load_model_and_labels():
     """Load the trained sklearn model."""
     global model
     
+    # Debug: Print current working directory and files
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Files in current directory: {os.listdir('.')}")
+    print(f"Looking for model at: {os.path.abspath(MODEL_PATH)}")
+    
     if not os.path.exists(MODEL_PATH):
         print(f"❌ Model file not found: {MODEL_PATH}")
-        print("Please ensure emotion_mlp_model (2).pkl is in the root directory")
-        return False
+        print(f"Absolute path checked: {os.path.abspath(MODEL_PATH)}")
+        # Try alternative locations
+        alt_paths = ['model.pkl', './model.pkl', 'root/model.pkl']
+        for alt_path in alt_paths:
+            if os.path.exists(alt_path):
+                print(f"Found model at alternative location: {alt_path}")
+                MODEL_PATH_UPDATED = alt_path
+                break
+        else:
+            print("Please ensure model.pkl is in the root directory")
+            return False
     
     try:
         model = joblib.load(MODEL_PATH)
         print(f"✅ Model loaded from {MODEL_PATH}")
+        print(f"✅ Model type: {type(model)}")
         print(f"✅ Emotion labels: {EMOTION_LABELS}")
         return True
     except Exception as e:
         print(f"❌ Error loading model: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
@@ -440,6 +457,10 @@ def health_check():
     return jsonify({
         'status': 'running',
         'model_loaded': model is not None,
+        'model_path': MODEL_PATH,
+        'model_exists': os.path.exists(MODEL_PATH),
+        'cwd': os.getcwd(),
+        'files_in_dir': os.listdir('.'),
         'database': os.path.exists(DB_FILE),
         'emotions': EMOTION_LABELS
     })
