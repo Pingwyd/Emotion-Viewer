@@ -351,7 +351,7 @@ gunicorn>=21.2.0
 - `__pycache__/` - Python cache
 - `*.pyc` - Compiled Python files
 - `emotion_detection.db` - Local database
-- `data/` - Training dataset (270+ images)
+- `data/` - Testing dataset (270+ images)
 - `random/` - Random test files
 - `exported_images/` - Exported image files
 - `export_images.py` - Utility script
