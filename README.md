@@ -2,6 +2,10 @@
 
 A complete emotion detection system using scikit-learn's MLPClassifier. Detects 5 emotions from uploaded images or live webcam capture with a trained neural network model.
 
+## ⚠️Known Issues:
+Model Attributes most if not all pictures with hands up or flaring to being angry 
+Model has difficulty distinguishing little sadness from little happiness
+
 ## 🌐 Live Demo
 
 **Deployed App**: https://emotion-viewer.onrender.com
